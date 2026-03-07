@@ -1,37 +1,45 @@
-import "./App.css";
-import { useEffect } from "react";
 import Board from "@/components/Board";
 import Controls from "@/components/Controls";
 import Footer from "@/components/Footer";
+import Header from "@/components/Header";
+import WinBanner from "@/components/WinBanner";
 import { useConfetti } from "@/hooks/useConfetti";
 import { usePuzzle } from "@/hooks/usePuzzle";
+import { DEFAULT_GRID_SIZE } from "@/utils/puzzleUtils";
 
-function App() {
-  const { tiles, handleMove, resetGame, moves, isSolved } = usePuzzle({
-    gridSize: 3,
-  });
-  const confetti = useConfetti();
+const App = () => {
+  const {
+    changeGridSize,
+    gridSize,
+    handleMove,
+    isSolved,
+    moves,
+    resetGame,
+    tiles,
+  } = usePuzzle({ gridSize: DEFAULT_GRID_SIZE });
 
-  useEffect(() => {
-    confetti(isSolved);
-  }, [isSolved, confetti]);
+  useConfetti(isSolved);
 
   return (
-    <div>
-      <header className="mb-8 flex w-full max-w-md items-center justify-center">
-        <Controls moves={moves} resetGame={resetGame} />
-      </header>
-      <main>
-        <Board
-          gridSize={3}
-          handleMove={handleMove}
-          isSolved={isSolved}
-          tiles={tiles}
-        />
-      </main>
+    <div className="mx-auto flex min-h-screen w-full max-w-md flex-col items-center justify-center gap-6 p-4">
+      <Header />
+      <Controls
+        moves={moves}
+        onGridSizeChange={changeGridSize}
+        resetGame={resetGame}
+      />
+
+      <Board
+        gridSize={gridSize}
+        handleMove={handleMove}
+        isSolved={isSolved}
+        tiles={tiles}
+      />
+
+      {isSolved && <WinBanner moves={moves} />}
       <Footer />
     </div>
   );
-}
+};
 
 export default App;

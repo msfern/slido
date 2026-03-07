@@ -5,5 +5,10 @@
   padding: 0.5rem;
   background-color: var(--board-base-color);
   border-radius: 0.5rem;
-  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.15);
+}
+
+.board.has-won .tile:not(.is-empty) {
+  cursor: default;
+  background-color: var(--tile-won-color);
 }

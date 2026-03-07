@@ -2,32 +2,30 @@ import type { GridSize, Tile as TileType } from "../types";
 import "./Board.css";
 import Tile from "./Tile";
 
-const Board = ({
-  handleMove,
-  tiles,
-  isSolved,
-  gridSize,
-}: {
-  handleMove: (clickIndex: number) => void;
-  tiles: TileType[];
-  isSolved: boolean;
+interface BoardProps {
   gridSize: GridSize;
-}) => {
+  handleMove: (clickIndex: number) => void;
+  isSolved: boolean;
+  tiles: TileType[];
+}
+
+const Board = ({ gridSize, handleMove, isSolved, tiles }: BoardProps) => {
   return (
-    <div
-      className="board"
+    <section
+      aria-label={`${gridSize} by ${gridSize} sliding puzzle`}
+      className={`board ${isSolved ? "has-won" : ""}`}
       style={{ "--grid-size": gridSize } as React.CSSProperties}
     >
       {tiles.map((tile, index) => (
         <Tile
+          gridSize={gridSize}
           handleMove={handleMove}
           index={index}
-          isSolved={isSolved}
           key={tile.value ?? "empty"}
           tile={tile}
         />
       ))}
-    </div>
+    </section>
   );
 };
 

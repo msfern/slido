@@ -1,7 +1,7 @@
-const Footer = () => {
-  return (
-    <footer>made by stephanie fernandes © {new Date().getFullYear()}</footer>
-  );
-};
+const Footer = () => (
+  <footer className="mt-4 text-slate-400 text-sm">
+    made by stephanie fernandes &copy; {new Date().getFullYear()}
+  </footer>
+);
 
 export default Footer;

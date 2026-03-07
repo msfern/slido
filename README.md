@@ -1,6 +1,6 @@
 # slido
 
-A classic sliding tile puzzle built with React 19 and TypeScript. Numbered tiles fill a cusotm grid; click any tile adjacent to the empty slot to slide it into place. The goal is to restore the sequence with the empty slot last.
+A classic sliding tile puzzle built with React 19 and TypeScript. Numbered tiles fill a custom grid; click any tile adjacent to the empty slot to slide it into place. The goal is to restore the sequence with the empty slot last.
 
 ## Tech stack
 
@@ -9,8 +9,11 @@ A classic sliding tile puzzle built with React 19 and TypeScript. Numbered tiles
 | React | 19 | UI |
 | TypeScript | 5.9 | Type safety |
 | Vite | 7 | Dev server & bundler |
+| Tailwind CSS | 4 | Utility-first styling |
+| Framer Motion | 12 | Tile slide animations |
+| shadcn/ui + Base UI | 4 / 1 | Accessible UI primitives |
 | Biome + Ultracite | 2.4.5 / 7.2.5 | Linting & formatting |
-| Vitest | 4 | Unit testing |
+| Vitest + RTL | 4 / 16 | Unit & component testing |
 
 ---
 
@@ -20,50 +23,39 @@ AI use in this project was used as pair programming and its results approved onl
 
 **Cursor** was the IDE, so auto-complete code was used.
 Architectural and general questions were done with **Gemini**.
-**Claude Sonnet 4.6** was used for planning, README.md generation, function comments and unit tests.
-**Clause Opus 4.6** was used to check the project and identify wrong design patterns, issues, uncaught bugs and points of improvement.
+**Claude Sonnet 4.6** was used for planning, README.md generation, JSDocs and unit tests.
+**Claude Opus 4.6** was used to check the project and identify wrong design patterns, issues, uncaught bugs and points of improvement.
+**Cursor (Agent mode) + Claude** was used for the senior-level code review and subsequent refactor (useReducer, accessibility, component tests, etc.).
 
 ---
 
 ## Thought process
 
-Understanding how the sliding puzzle works before touching code.
-What is a board? What is a tile?
-Clicking a tile makes it move to gap.
-You win when the tiles are all back in their correct places.
+### Getting the basics right first
 
-* Shuffling from a solved state is the safest way to ensure the user never gets frustrated by a broken game.
+Before writing any code, I spent time understanding how the game actually works: what is a board? What is a tile? When you click a tile, it slides into the empty gap. You win when all tiles are back in order with the empty slot last. Simple, but getting the data structure wrong would haunt me.
 
-My initial plan was to create a 2D grid...
+I originally planned a 2D grid (nested arrays), but a 1D flat array turned out to be much easier — it maps straight to CSS Grid, avoids nested loops, and keeps React keys simple. I also tried moving around with row/col coordinates, but mixing that with array indices got messy. In the end I went index-only for both moving and adjacency checks. Less mental overhead, and the code reads like the actual game rule.
 
-1D array is easier to manipulate than a nested array.
+### The shuffle trap (and how to avoid it)
 
-I tried to move around using row,col, but it was easier to do it with index. Row/col only for detecting if gap is neighbor.
+If you naïvely randomize the numbers 1–8 with something like `array.sort(() => Math.random() - 0.5)`, 50% of the time the puzzle is unsolvable. A recruiter clicking "New Game" and getting stuck forever? Not a good look.
 
-Instead of using row/col AND index, I decided to just go with index instead for both moving AND detecting. It got too complex having to swap everything and the readability was just too confusing.
+Two options: (1) The Math way — check inversion count and flip if the parity is wrong. A bit of a headache. (2) The simulation way — start from a solved board and programmatically "click" a random valid neighbor 100–200 times. You're literally replaying legal moves, so the result is always solvable. I went with the latter.
 
-export const canMoveTile = (
-  board: Tile[],
-  clickedTileIndex: number
-): boolean => {
-  const emptyTileIndex = getEmptyTileIndex(board);
-  return (
-    clickedTileIndex === emptyTileIndex + 1 ||
-    clickedTileIndex === emptyTileIndex - 1 ||
-    clickedTileIndex === emptyTileIndex + GRID_SIZE ||
-    clickedTileIndex === emptyTileIndex - GRID_SIZE
-  );
-};
+### The memo mystery
 
-findIndex is an $O(n)$ operation. Every time you click a tile, you are looping through the array to find the gap. So i'm gonna pass it down from usePuzzle.
+At some point I noticed all tiles were re-rendering on every click, even with `memo` and `useCallback`. Turned out the problem was `handleMove`: it had `tiles` in its dependency array. Every move updated `tiles`, so `handleMove` got a new identity every time — and `memo` on the tiles was useless. Moving the adjacency logic fully inside functional updates helped, but the real fix was switching to `useReducer`. `dispatch` never changes, so `handleMove` stays stable and only the two tiles that actually swap get re-rendered.
 
-All tiles were being rerendered on every click, even though they were wrapped in memo and the click prop was being passed with a useCallback. FUNCTIONAL STATE UPDATES were the answer
+### Animation?
 
-If you simply randomize the array, exactly 50% of the time, the puzzle will be impossible to solve. To avoid the embarrassment of a recruiter getting stuck on an unsolvable board, you have two choices:
+No make it look prettier I added a Framer Motion animation for the tiles. It was SMOOTH. But I realized I was adding a whole library just to make a transition look good, and that was bundle weight I could avoid.
 
-The Math Way: Check the "Inversion Count" of the array (it’s a bit of a headache).
+### Post–code review: what AI helped fix
 
-The Senior Way (The "Simulation" Shuffle): Start with a solved board and programmatically "click" a random valid neighbor 100–200 times. This guarantees the board is solvable because you’re just retracing valid steps.
+I ran a senior-level code review on this project (with AI assistance) and got a pretty brutal but fair verdict: "Not ready to submit." The logic was solid, but a bunch of things would have tanked a take-home assessment.
+
+So I used AI (Cursor + Claude) to work through the fix list: refactored to `useReducer`, fixed `resetGame`, added proper aria-labels and live regions, wired up the grid-size selector, added the win message, wrote Board component tests, trimmed unused CSS, added an error boundary (via `react-error-boundary` so we avoid class components), fixed `main.tsx` with a proper null-check, and synced the README with reality. The AI did the heavy lifting, but I reviewed and adjusted everything — the logic, the accessibility choices, and the structure all had to make sense.
 
 ---
 
@@ -75,11 +67,11 @@ Phase 3: The "Skeleton" UI (The "View")
 
 **Flat array as board state.** The board is represented as a single `Tile[]` rather than a 2D matrix. A flat array maps directly to a CSS Grid layout, simplifies React key management, and avoids nested loops in most operations.
 
-**Tiles carry their own position.** Each `Tile` stores a `{ row, col }` coordinate. This means `canMoveTile` is pure coordinate arithmetic — no index-to-row/col conversion needed at the call site, and the logic reads like the actual game rule.
-
 **Pure utility functions.** All game logic lives in `src/utils/puzzleUtils.ts` as plain functions with no side effects. They take state in, return new state out. This makes them straightforward to unit test in isolation.
 
-**Single hook, dumb components.** `usePuzzle` owns all mutable state (`tiles`, `moves`, `isSolved`). Components receive data and callbacks as props and render nothing beyond what they are given. No Context API, no global store. The app is small enough that this is the right trade-off.
+**Reducer-based state management.** `usePuzzle` uses `useReducer` with a pure `gameReducer` that handles `MOVE`, `RESET`, and `CHANGE_GRID_SIZE` actions. The reducer is exported and tested directly as a pure function. `dispatch` has a stable identity, which means `memo(Tile)` actually works — only the two tiles involved in a swap re-render.
+
+**Single hook, dumb components.** `usePuzzle` owns all mutable state. Components receive data and callbacks as props and render nothing beyond what they are given. No Context API, no global store. The app is small enough that this is the right trade-off.
 
 ---
 
@@ -92,7 +84,8 @@ flowchart TD
     App --> Footer
     Board --> Tile
     App -->|"usePuzzle()"| Hook["usePuzzle hook"]
-    Hook --> puzzleUtils["puzzleUtils.ts (pure functions)"]
+    Hook -->|"useReducer"| Reducer["gameReducer"]
+    Reducer --> puzzleUtils["puzzleUtils.ts (pure functions)"]
 ```
 
 `App` calls `usePuzzle` and fans the resulting state and callbacks down one level to `Board` and `Controls`. No prop drilling beyond that depth.
@@ -101,11 +94,12 @@ flowchart TD
 
 | Component | Responsibility |
 | --- | --- |
-| `App` | Composes layout; connects hook to children |
-| `Board` | Renders the tile grid; forwards click index to `handleMove` |
-| `Tile` | Single interactive tile; memoised to avoid unnecessary re-renders |
-| `Controls` | New Game button; future home for grid-size switcher |
+| `App` | Composes layout; connects hook to children; renders win message |
+| `Board` | Renders the tile grid as a CSS Grid `<section>` |
+| `Tile` | Single interactive tile; memoised, animated with Framer Motion `layout` |
+| `Controls` | Move counter, grid-size radio selector, New Game button |
 | `Footer` | Static attribution line |
+| `react-error-boundary` | Catches runtime errors and renders fallback UI (no class components in app) |
 
 ---
 
@@ -115,67 +109,69 @@ All functions live in [`src/utils/puzzleUtils.ts`](src/utils/puzzleUtils.ts).
 
 ### `createBoard(gridSize)`
 
-Builds the initial **solved** board as a flat array of `gridSize²` tiles. Values are 1-based integers in order; the last tile has `value: null` (the empty slot). Each tile's `position` is derived from its index.
+Builds the initial **solved** board as a flat array of `gridSize²` tiles. Values are 1-based integers in order; the last tile has `value: null` (the empty slot).
 
 ```txt
-index 0 → { value: 1, position: { row: 0, col: 0 } }
-index 8 → { value: null, position: { row: 2, col: 2 } }
+index 0 → { value: 1 }
+index 8 → { value: null }
 ```
+
+### `shuffleBoard(board, gridSize)`
+
+Simulates 200 random legal moves from the solved state to produce a solvable starting board. This guarantees solvability without needing an inversion-count check.
 
 ### `getEmptyTileIndex(board)`
 
-`Array.findIndex` for the tile where `value === null`. Used internally by `canMoveTile` and `moveTile`.
+`Array.findIndex` for the tile where `value === null`.
 
-### `canMoveTile(board, clickIndex)`
+### `canMoveTile(clickedIndex, emptyIndex, gridSize)`
 
-Pure coordinate adjacency check. A tile can move if and only if it shares exactly one side with the empty slot:
+Pure adjacency check. A tile can move if and only if it shares exactly one side with the empty slot. Handles row-boundary wrap prevention.
 
-```txt
-same row, col ± 1   →  horizontal neighbour
-same col, row ± 1   →  vertical neighbour
-```
-
-Diagonal and non-adjacent tiles always return `false`.
-
-### `moveTile(board, clickIndex)`
+### `moveTile(board, clickedIndex, emptyIndex)`
 
 Immutable swap: spreads the board into a new array, then destructure-assigns the clicked tile and the empty slot. Returns the new array; the original is never mutated.
 
 ### `checkWin(tiles)`
 
-Two-pass check:
-
-1. Last tile must be `null`.
-2. Every other tile at index `i` must have `value === i + 1`.
-
-Short-circuits on the first failure.
-
-### `shuffleBoard(board)` ⚠️
-
-Currently a **stub** — returns the board unchanged. See [To-dos](#to-dos).
+Checks whether tiles are ordered 1…n-1 with the empty tile last. Short-circuits on the first failure.
 
 ---
 
 ## State management
 
-[`src/hooks/usePuzzle.ts`](src/hooks/usePuzzle.ts) is the single source of truth.
+[`src/hooks/usePuzzle.ts`](src/hooks/usePuzzle.ts) is the single source of truth, built on `useReducer`.
 
-| State | Type | Description |
+### `GameState`
+
+| Field | Type | Description |
 | --- | --- | --- |
 | `tiles` | `Tile[]` | Current board |
 | `moves` | `number` | Incremented on every legal move |
-| `isSolved` | `boolean` | Locked to `true` after `checkWin` passes |
+| `status` | `GameStatus` | `"idle"` / `"playing"` / `"won"` |
+| `gridSize` | `GridSize` | Current grid size (3, 4, or 5) |
 
-### `handleMove(clickIndex)`
+### `GameAction`
 
-1. Guard: returns early if `isSolved`.
-2. Delegates to `canMoveTile`; no-ops on illegal clicks.
-3. Increments `moves`, calls `moveTile`, updates `tiles`.
-4. Calls `checkWin` on the new board; sets `isSolved` if it passes.
+| Action | Payload | Effect |
+| --- | --- | --- |
+| `MOVE` | `clickedIndex` | Validates adjacency, swaps tiles, increments moves, checks win |
+| `RESET` | — | Re-shuffles the board at the current grid size |
+| `CHANGE_GRID_SIZE` | `gridSize` | Creates a fresh board at the new size |
 
-### `resetGame`
+### Why `useReducer` over `useState`
 
-Reinitialises all three state values to their starting defaults.
+The original implementation used three coupled `useState` calls with a `useCallback` that depended on `tiles`. This caused `handleMove` to get a new identity on every move, defeating `memo` on all tiles. With `useReducer`, `dispatch` is inherently stable and all state transitions are co-located in a pure, testable reducer.
+
+---
+
+## Accessibility
+
+- **Tile labels:** Each numbered tile has an `aria-label` like "Tile 5, row 2, column 2"
+- **Empty tile:** Rendered as a `<div aria-hidden="true">` (non-focusable, invisible to screen readers)
+- **Move counter:** Uses `<output aria-live="polite">` to announce changes
+- **Win announcement:** Uses `<output aria-live="assertive">` to announce the victory
+- **Board:** `<section>` element with descriptive `aria-label`
 
 ---
 
@@ -185,25 +181,10 @@ Defined in [`src/types/index.ts`](src/types/index.ts).
 
 ```ts
 type TileValue = number | null;
-
-interface TilePosition { row: number; col: number; }
-
-interface Tile { value: TileValue; position: TilePosition; }
-
+interface Tile { value: TileValue; }
+type GridSize = 3 | 4 | 5;
 type GameStatus = "idle" | "playing" | "won";
-
-interface GameStats { moves: number; seconds: number; }
-
-interface PuzzleState {
-  bestScore: number | null;
-  gridSize: number;
-  moves: number;
-  status: GameStatus;
-  tiles: Tile[];
-}
 ```
-
-`GameStatus`, `GameStats`, and `PuzzleState` are defined but not yet wired into the application (see [To-dos](#to-dos)).
 
 ---
 
@@ -221,16 +202,9 @@ pnpm coverage     # Vitest coverage report
 
 ---
 
-## To-dos
+## Future improvements
 
-* [ ] **Shuffle** — `shuffleBoard` is a stub. Implement Fisher-Yates shuffle with a solvability guard (inversion-count parity check) so the generated board is always reachable.
-* [ ] **Tests** — Vitest is installed but no test files exist yet. Priority targets:
-  * `createBoard` — correct length, values, positions
-  * `canMoveTile` — adjacent returns `true`, diagonal/far returns `false`
-  * `moveTile` — immutability, correct swap
-  * `checkWin` — solved board passes, any other state fails
-* [ ] **UI** — `Tile` currently renders raw debug text (`value (row, col)`). Needs visual styling; `Board.css` only sets `grid-template-columns`.
-* [ ] **Move counter & win screen** — `moves` and `isSolved` are tracked in the hook but never rendered.
-* [ ] **Timer** — `GameStats.seconds` is typed but no timer has been started.
-* [ ] **Grid size switcher** — `Controls.tsx` has a placeholder comment; `PuzzleState.gridSize` is typed but `GRID_SIZE` is hardcoded to `3`.
-* [ ] **Best score persistence** — `PuzzleState.bestScore` suggests `localStorage` storage; not yet implemented.
+- **Keyboard controls:** Arrow-key navigation for moving tiles
+- **Timer:** Track and display elapsed time per game
+- **Best score persistence:** Save best scores to `localStorage` per grid size
+- **Dark mode:** Wire up the existing CSS custom property dark theme

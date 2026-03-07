@@ -4,6 +4,8 @@ import {
   canMoveTile,
   checkWin,
   createBoard,
+  createInitialGameState,
+  GRID_SIZE_OPTIONS,
   moveTile,
   shuffleBoard,
 } from "./puzzleUtils";
@@ -11,7 +13,7 @@ import {
 describe("puzzleUtils", () => {
   describe("createBoard", () => {
     it.each([
-      3, 4, 5,
+      ...GRID_SIZE_OPTIONS,
     ])("should create a board with the correct number of tiles for gridSize %i", (gridSize) => {
       const board = createBoard(gridSize);
       expect(board).toHaveLength(gridSize * gridSize);
@@ -19,7 +21,7 @@ describe("puzzleUtils", () => {
     });
 
     it.each([
-      3, 4, 5,
+      ...GRID_SIZE_OPTIONS,
     ])("should have tiles ordered 1…n-1 for gridSize %i", (gridSize) => {
       const board = createBoard(gridSize);
       const area = gridSize * gridSize;
@@ -164,6 +166,19 @@ describe("puzzleUtils", () => {
 
     it("should return a new array reference", () => {
       expect(shuffleBoard(solvedBoard, 3)).not.toBe(solvedBoard);
+    });
+  });
+
+  describe("createInitialGameState", () => {
+    it.each([
+      ...GRID_SIZE_OPTIONS,
+    ])("produces a board of the correct size with zero moves for gridSize %i", (gridSize) => {
+      const state = createInitialGameState(gridSize);
+
+      expect(state.tiles).toHaveLength(gridSize * gridSize);
+      expect(state.moves).toBe(0);
+      expect(state.status).toBe("idle");
+      expect(state.gridSize).toBe(gridSize);
     });
   });
 });

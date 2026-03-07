@@ -1,57 +1,34 @@
-import { useCallback, useState } from "react";
-import type { GridSize, Tile } from "../types";
-import {
-  canMoveTile,
-  checkWin,
-  createBoard,
-  getEmptyTileIndex,
-  moveTile,
-  shuffleBoard,
-} from "../utils/puzzleUtils";
+import { useCallback, useReducer } from "react";
+import { puzzleReducer } from "@/reducer/puzzleReducer";
+import type { GridSize } from "../types";
+import { createInitialGameState } from "../utils/puzzleUtils";
 
-/**
- * Holds the logic for the puzzle
- * @returns {tiles: Tile[], handleMove: (tile: Tile) => void, moves: number, resetGame: () => void, isSolved: boolean}
- */
 export const usePuzzle = ({ gridSize }: { gridSize: GridSize }) => {
-  const [tiles, setTiles] = useState<Tile[]>(() =>
-    shuffleBoard(createBoard(gridSize), gridSize)
+  const [state, dispatch] = useReducer(
+    puzzleReducer,
+    createInitialGameState(gridSize)
   );
-  const [moves, setMoves] = useState(0);
-  const [isSolved, setIsSolved] = useState(false);
 
   const handleMove = useCallback(
-    (clickedTileIndex: number) => {
-      if (isSolved) {
-        return;
-      }
-      const emptyTileIndex = getEmptyTileIndex(tiles);
-
-      if (canMoveTile(clickedTileIndex, emptyTileIndex, gridSize)) {
-        setMoves((prevMoves) => prevMoves + 1);
-        setTiles((prevTiles: Tile[]): Tile[] => {
-          const updatedTiles = moveTile(
-            prevTiles,
-            clickedTileIndex,
-            emptyTileIndex
-          );
-
-          if (checkWin(updatedTiles)) {
-            setIsSolved(true);
-          }
-
-          return updatedTiles;
-        });
-      }
-    },
-    [gridSize, isSolved, tiles]
+    (clickedIndex: number) => dispatch({ type: "MOVE", clickedIndex }),
+    []
   );
 
-  const resetGame = useCallback(() => {
-    setTiles(shuffleBoard(createBoard(gridSize), gridSize));
-    setMoves(0);
-    setIsSolved(false);
-  }, [gridSize]);
+  const resetGame = useCallback(() => dispatch({ type: "RESET" }), []);
 
-  return { tiles, handleMove, moves, resetGame, isSolved };
+  const changeGridSize = useCallback(
+    (newSize: GridSize) =>
+      dispatch({ type: "CHANGE_GRID_SIZE", gridSize: newSize }),
+    []
+  );
+
+  return {
+    changeGridSize,
+    gridSize: state.gridSize,
+    handleMove,
+    isSolved: state.status === "won",
+    moves: state.moves,
+    resetGame,
+    tiles: state.tiles,
+  };
 };

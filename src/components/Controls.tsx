@@ -1,41 +1,32 @@
 import { memo } from "react";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import GridSizeSelector from "@/components/GridSizeSelector";
+import type { GridSize } from "@/types";
+import Button from "./ui/Button";
 
-const Controls = ({
-  moves,
-  resetGame,
-}: {
+interface ControlsProps {
   moves: number;
+  onGridSizeChange: (gridSize: GridSize) => void;
   resetGame: () => void;
-}) => {
+}
+
+const Controls = ({ moves, onGridSizeChange, resetGame }: ControlsProps) => {
   return (
-    <div>
-      <div className="flex flex-col">
+    <div className="flex w-full items-center justify-between gap-6">
+      <div className="flex flex-col items-center">
         <span className="font-bold text-slate-400 text-xs uppercase tracking-widest">
           Moves
         </span>
-        <span className="font-black text-3xl text-slate-800 tabular-nums">
+        <output
+          aria-live="polite"
+          className="block font-black text-3xl text-slate-800 tabular-nums"
+        >
           {moves}
-        </span>
+        </output>
       </div>
-      <RadioGroup defaultValue="option-one">
-        <div className="flex items-center gap-3">
-          <RadioGroupItem id="option-one" value="option-one" />
-          <Label htmlFor="option-one">Option One</Label>
-        </div>
-        <div className="flex items-center gap-3">
-          <RadioGroupItem id="option-two" value="option-two" />
-          <Label htmlFor="option-two">Option Two</Label>
-        </div>
-      </RadioGroup>
-      <button
-        className="rounded-lg bg-slate-800 px-4 py-2 font-medium text-white transition-colors hover:bg-slate-900"
-        onClick={resetGame}
-        type="button"
-      >
-        New Game
-      </button>
+
+      <GridSizeSelector onGridSizeChange={onGridSizeChange} />
+
+      <Button onClick={resetGame}>New Game</Button>
     </div>
   );
 };

@@ -1,7 +1,8 @@
-import type { GridSize, Tile } from "../types";
+import type { GameState, GridSize, Tile } from "../types";
 
 // CONSTANTS
 export const DEFAULT_GRID_SIZE: GridSize = 3; // Default grid size
+export const GRID_SIZE_OPTIONS: GridSize[] = [3, 4, 5];
 
 /**
  * Creates the initial solved board as a flat array of Tiles.
@@ -10,7 +11,7 @@ export const DEFAULT_GRID_SIZE: GridSize = 3; // Default grid size
  * @param gridSize - Number of rows (and columns) in the square grid.
  * @returns Ordered array of `gridSize²` Tile objects.
  */
-export const createBoard = (gridSize: number): Tile[] => {
+export const createBoard = (gridSize: GridSize): Tile[] => {
   const area = gridSize * gridSize;
   return Array.from({ length: area }, (_, index) => ({
     value: index === area - 1 ? null : index + 1,
@@ -25,7 +26,7 @@ export const createBoard = (gridSize: number): Tile[] => {
  * @param gridSize - The size of the grid
  * @returns A new array of the same Tiles in a shuffled order
  */
-export const shuffleBoard = (board: Tile[], gridSize: number): Tile[] => {
+export const shuffleBoard = (board: Tile[], gridSize: GridSize): Tile[] => {
   const currentBoard = [...board];
 
   /**
@@ -35,7 +36,7 @@ export const shuffleBoard = (board: Tile[], gridSize: number): Tile[] => {
    * @param gridSize - The size of the grid
    * @returns The valid neighbors of the empty tile
    */
-  const getValidNeighbors = (gapIdx: number, gridSize: number): number[] => {
+  const getValidNeighbors = (gapIdx: number, gridSize: GridSize): number[] => {
     const neighbors: number[] = [];
 
     const row = Math.floor(gapIdx / gridSize);
@@ -75,6 +76,19 @@ export const shuffleBoard = (board: Tile[], gridSize: number): Tile[] => {
   }
   return currentBoard;
 };
+
+/**
+ * Creates the initial game state with a shuffled board.
+ *
+ * @param gridSize - The size of the grid.
+ * @returns The initial game state.
+ */
+export const createInitialGameState = (gridSize: GridSize): GameState => ({
+  gridSize,
+  moves: 0,
+  status: "idle",
+  tiles: shuffleBoard(createBoard(gridSize), gridSize),
+});
 
 /**
  * Returns the index of the empty tile in the board array.
@@ -123,7 +137,6 @@ export const canMoveTile = (
  * @param board - The current board state.
  * @param clickedTileIndex - The index of the clicked tile.
  * @param emptyTileIndex - The index of the empty tile.
- * @param gridSize - The size of the grid.
  * @returns A new board array reflecting the move.
  */
 export const moveTile = (
