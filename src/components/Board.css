@@ -1,4 +1,9 @@
 .board {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr)
+  display: grid;
+  grid-template-columns: repeat(var(--grid-size), 1fr);
+  gap: var(--tile-gap);
+  padding: 0.5rem;
+  background-color: var(--board-base-color);
+  border-radius: 0.5rem;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.4);
 }

@@ -21,6 +21,7 @@ AI use in this project was used as pair programming and its results approved onl
 **Cursor** was the IDE, so auto-complete code was used.
 Architectural and general questions were done with **Gemini**.
 **Claude Sonnet 4.6** was used for planning, README.md generation, function comments and unit tests.
+**Clause Opus 4.6** was used to check the project and identify wrong design patterns, issues, uncaught bugs and points of improvement.
 
 ---
 

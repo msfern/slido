@@ -1,0 +1,19 @@
+.tile {
+  z-index: 1;
+  aspect-ratio: 1 / 1;
+  padding: 0.5rem;
+  font-size: 2rem;
+  font-weight: bold;
+  background-color: var(--tile-base-color);
+
+  &.has-won {
+    background-color: var(--tile-won-color);
+  }
+
+  &.is-empty {
+    z-index: 0;
+    pointer-events: none;
+    background-color: var(--empty-tile-color);
+    box-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
+  }
+}

@@ -1,30 +1,33 @@
-import type { Tile as TileType } from "../types";
+import type { GridSize, Tile as TileType } from "../types";
 import "./Board.css";
 import Tile from "./Tile";
 
 const Board = ({
   handleMove,
   tiles,
-  moves,
+  isSolved,
+  gridSize,
 }: {
   handleMove: (clickIndex: number) => void;
   tiles: TileType[];
-  moves: number;
+  isSolved: boolean;
+  gridSize: GridSize;
 }) => {
   return (
-    <>
-      <p>Moves: {moves}</p>
-      <div className="board">
-        {tiles.map((tile, index) => (
-          <Tile
-            handleMove={handleMove}
-            index={index}
-            key={tile.value ?? "empty"}
-            tile={tile}
-          />
-        ))}
-      </div>
-    </>
+    <div
+      className="board"
+      style={{ "--grid-size": gridSize } as React.CSSProperties}
+    >
+      {tiles.map((tile, index) => (
+        <Tile
+          handleMove={handleMove}
+          index={index}
+          isSolved={isSolved}
+          key={tile.value ?? "empty"}
+          tile={tile}
+        />
+      ))}
+    </div>
   );
 };
 

@@ -1,43 +1,36 @@
 import "./App.css";
-import confetti from "canvas-confetti";
 import { useEffect } from "react";
 import Board from "./components/Board";
 import Controls from "./components/Controls";
 import Footer from "./components/Footer";
+import { useConfetti } from "./hooks/useConfetti";
 import { usePuzzle } from "./hooks/usePuzzle";
-import { DEFAULT_GRID_SIZE } from "./utils/puzzleUtils";
 
 function App() {
   const { tiles, handleMove, resetGame, moves, isSolved } = usePuzzle({
-    gridSize: DEFAULT_GRID_SIZE,
+    gridSize: 3,
   });
-
-  console.log("tiles");
+  const confetti = useConfetti();
 
   useEffect(() => {
-    if (isSolved) {
-      confetti({
-        startVelocity: 30,
-        spread: 360,
-        ticks: 60,
-        zIndex: 0,
-        particleCount: 100,
-        origin: {
-          x: Math.random() * (0.3 - 0.1) + 0.1,
-          y: Math.random() - 0.2,
-        },
-      });
-    }
-  }, [isSolved]);
+    confetti(isSolved);
+  }, [isSolved, confetti]);
 
   return (
-    <>
+    <div>
+      <header className="mb-8 flex w-full max-w-md items-center justify-center">
+        <Controls moves={moves} resetGame={resetGame} />
+      </header>
       <main>
-        <Controls resetGame={resetGame} />
-        <Board handleMove={handleMove} moves={moves} tiles={tiles} />
+        <Board
+          gridSize={3}
+          handleMove={handleMove}
+          isSolved={isSolved}
+          tiles={tiles}
+        />
       </main>
       <Footer />
-    </>
+    </div>
   );
 }
 

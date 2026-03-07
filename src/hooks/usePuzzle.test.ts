@@ -79,7 +79,6 @@ describe("usePuzzle", () => {
     it("accumulates moves across multiple valid moves", () => {
       vi.mocked(shuffleBoard).mockReturnValueOnce([...nearSolvedBoard]);
       const { result } = renderHook(() => usePuzzle({ gridSize: 3 }));
-      console.log(result.current.tiles);
 
       act(() => {
         result.current.handleMove(6); // move 1: empty → index 6

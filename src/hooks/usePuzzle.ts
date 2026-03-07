@@ -48,7 +48,7 @@ export const usePuzzle = ({ gridSize }: { gridSize: GridSize }) => {
   );
 
   const resetGame = useCallback(() => {
-    setTiles(createBoard(gridSize));
+    setTiles(shuffleBoard(createBoard(gridSize), gridSize));
     setMoves(0);
     setIsSolved(false);
   }, [gridSize]);
