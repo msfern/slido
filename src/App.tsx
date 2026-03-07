@@ -1,10 +1,10 @@
 import "./App.css";
 import { useEffect } from "react";
-import Board from "./components/Board";
-import Controls from "./components/Controls";
-import Footer from "./components/Footer";
-import { useConfetti } from "./hooks/useConfetti";
-import { usePuzzle } from "./hooks/usePuzzle";
+import Board from "@/components/Board";
+import Controls from "@/components/Controls";
+import Footer from "@/components/Footer";
+import { useConfetti } from "@/hooks/useConfetti";
+import { usePuzzle } from "@/hooks/usePuzzle";
 
 function App() {
   const { tiles, handleMove, resetGame, moves, isSolved } = usePuzzle({
