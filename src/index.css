@@ -11,20 +11,8 @@
   --tile-won-color: var(--color-emerald-500);
   --tile-text-color: var(--color-white);
   --empty-tile-color: var(--color-slate-100);
+
   --tile-gap: var(--spacing);
-
-  font-family: system-ui, Inter, Helvetica, Arial, sans-serif;
-  font-weight: 400;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  font-synthesis: none;
-  line-height: 1.5;
-  color: rgba(255, 255, 255, 0.87);
-
-  color-scheme: light dark;
-  background-color: var(--color-slate-50);
-  text-rendering: optimizeLegibility;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -57,6 +45,19 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  font-family: system-ui, Inter, Helvetica, Arial, sans-serif;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  font-synthesis: none;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.87);
+
+  color-scheme: light dark;
+  background-color: var(--color-slate-50);
+  text-rendering: optimizeLegibility;
 }
 
 body {
@@ -65,32 +66,6 @@ body {
   min-width: 200px;
   min-height: 100vh;
   margin: 0;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  padding: 0.6em 1.2em;
-  font-family: inherit;
-  font-size: 1em;
-  font-weight: 500;
-  cursor: pointer;
-  background-color: #1a1a1a;
-  border: 1px solid transparent;
-  border-radius: 8px;
-  transition: border-color 0.25s;
-}
-
-button:hover {
-  border-color: #646cff;
-}
-
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
 }
 
 .dark {
