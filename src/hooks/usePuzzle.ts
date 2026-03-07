@@ -4,7 +4,9 @@ import {
   canMoveTile,
   checkWin,
   createBoard,
+  getEmptyTileIndex,
   moveTile,
+  shuffleBoard,
 } from "../utils/puzzleUtils";
 
 /**
@@ -12,43 +14,37 @@ import {
  * @returns {tiles: Tile[], handleMove: (tile: Tile) => void, moves: number, resetGame: () => void, isSolved: boolean}
  */
 export const usePuzzle = ({ gridSize }: { gridSize: GridSize }) => {
-  const [tiles, setTiles] = useState<Tile[]>(() => createBoard(gridSize));
+  const [tiles, setTiles] = useState<Tile[]>(() =>
+    shuffleBoard(createBoard(gridSize), gridSize)
+  );
   const [moves, setMoves] = useState(0);
   const [isSolved, setIsSolved] = useState(false);
 
   const handleMove = useCallback(
     (clickedTileIndex: number) => {
-      // Use the functional update to get the LATEST state without needing it in dependencies
-      setTiles((prevTiles: Tile[]): Tile[] => {
-        if (isSolved) {
-          return prevTiles;
-        }
-        const emptyTileIndex = prevTiles.findIndex(
-          (tile: Tile): boolean => tile.value === null
-        );
+      if (isSolved) {
+        return;
+      }
+      const emptyTileIndex = getEmptyTileIndex(tiles);
 
-        if (canMoveTile(clickedTileIndex, emptyTileIndex, gridSize)) {
-          // 2. Move the tile
+      if (canMoveTile(clickedTileIndex, emptyTileIndex, gridSize)) {
+        setMoves((prevMoves) => prevMoves + 1);
+        setTiles((prevTiles: Tile[]): Tile[] => {
           const updatedTiles = moveTile(
             prevTiles,
             clickedTileIndex,
             emptyTileIndex
           );
 
-          // 3. Update moves (using functional update here too!)
-          setMoves((prevMoves) => prevMoves + 1);
-
-          // 4. Check win
           if (checkWin(updatedTiles)) {
             setIsSolved(true);
           }
 
           return updatedTiles;
-        }
-        return prevTiles;
-      });
+        });
+      }
     },
-    [gridSize, isSolved]
+    [gridSize, isSolved, tiles]
   );
 
   const resetGame = useCallback(() => {

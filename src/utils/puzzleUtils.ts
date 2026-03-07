@@ -21,12 +21,69 @@ export const createBoard = (gridSize: number): Tile[] => {
  * Returns a new board array with tiles in a randomised order.
  * Intended to produce a solvable starting state before each game.
  *
- * @param board - The solved board to shuffle.
- * @returns A new array of the same Tiles in a shuffled order.
+ * @param board - The solved board to shuffle
+ * @param gridSize - The size of the grid
+ * @returns A new array of the same Tiles in a shuffled order
  */
-export const shuffleBoard = (board: Tile[]): Tile[] => {
-  // TODO: Implement shuffle logic
-  return [...board];
+export const shuffleBoard = (board: Tile[], gridSize: number): Tile[] => {
+  const currentBoard = [...board];
+
+  /**
+   * Returns the valid neighbors of the empty tile
+   *
+   * @param gapIdx - The index of the empty tile
+   * @param gridSize - The size of the grid
+   * @returns The valid neighbors of the empty tile
+   */
+  const getValidNeighbors = (gapIdx: number, gridSize: number): number[] => {
+    const neighbors: number[] = [];
+
+    const row = Math.floor(gapIdx / gridSize);
+    const col = gapIdx % gridSize;
+
+    // North
+    if (row > 0) {
+      neighbors.push(gapIdx - gridSize);
+    }
+    // South
+    if (row < gridSize - 1) {
+      neighbors.push(gapIdx + gridSize);
+    }
+    // West
+    if (col > 0) {
+      neighbors.push(gapIdx - 1);
+    }
+    // East
+    if (col < gridSize - 1) {
+      neighbors.push(gapIdx + 1);
+    }
+
+    return neighbors;
+  };
+
+  for (let i = 0; i < 200; i++) {
+    const gapIdx = getEmptyTileIndex(currentBoard);
+    const neighbors = getValidNeighbors(gapIdx, gridSize); // Helper to find indices North, South, East, West
+    const randomNeighbor =
+      neighbors[Math.floor(Math.random() * neighbors.length)];
+
+    // Swap them
+    [currentBoard[gapIdx], currentBoard[randomNeighbor]] = [
+      currentBoard[randomNeighbor],
+      currentBoard[gapIdx],
+    ];
+  }
+  return currentBoard;
+};
+
+/**
+ * Returns the index of the empty tile in the board array.
+ *
+ * @param board - The current board state.
+ * @returns The index of the empty tile.
+ */
+export const getEmptyTileIndex = (board: Tile[]): number => {
+  return board.findIndex((tile) => tile.value === null);
 };
 
 /**
@@ -91,17 +148,11 @@ export const moveTile = (
  * @returns `true` if every tile is in its goal position.
  */
 export const checkWin = (tiles: Tile[]): boolean => {
-  // The last tile must be null
-  if (tiles.at(-1)?.value !== null) {
-    return false;
-  }
-
-  // Every other tile must be index + 1
-  for (let i = 0; i < tiles.length - 1; i++) {
-    if (tiles[i].value !== i + 1) {
-      return false;
+  // Check if every tile (except the last one) is in its correct 1-based index position
+  return tiles.every((tile, i) => {
+    if (i === tiles.length - 1) {
+      return tile.value === null; // Last one should be the gap
     }
-  }
-
-  return true;
+    return tile.value === i + 1; // e.g., Index 0 should have value 1
+  });
 };

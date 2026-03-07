@@ -152,18 +152,18 @@ describe("puzzleUtils", () => {
     const solvedBoard = createBoard(3);
 
     it("should return an array of the same length", () => {
-      expect(shuffleBoard(solvedBoard)).toHaveLength(solvedBoard.length);
+      expect(shuffleBoard(solvedBoard, 3)).toHaveLength(solvedBoard.length);
     });
 
     it("should contain the same set of tile values", () => {
-      const shuffled = shuffleBoard(solvedBoard);
+      const shuffled = shuffleBoard(solvedBoard, 3);
       const originalValues = solvedBoard.map((t) => t.value).sort();
       const shuffledValues = shuffled.map((t) => t.value).sort();
       expect(shuffledValues).toEqual(originalValues);
     });
 
     it("should return a new array reference", () => {
-      expect(shuffleBoard(solvedBoard)).not.toBe(solvedBoard);
+      expect(shuffleBoard(solvedBoard, 3)).not.toBe(solvedBoard);
     });
   });
 });

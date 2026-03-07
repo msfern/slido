@@ -8,7 +8,6 @@ interface TileProps {
 }
 
 const Tile = ({ index, handleMove, tile }: TileProps) => {
-  console.log(`Rendering Tile: ${tile.value}`);
   return (
     <button
       disabled={tile.value === null}
