@@ -1,5 +1,6 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
+import { axe } from "vitest-axe";
 import Footer from "./Footer";
 
 const ATTRIBUTION = /made by stephanie fernandes/i;
@@ -25,5 +26,10 @@ describe("Footer", () => {
     const { container } = render(<Footer />);
 
     expect(container.querySelector("footer")).not.toBeNull();
+  });
+
+  it("should have no axe violations", async () => {
+    const { baseElement } = render(<Footer />);
+    expect(await axe(baseElement)).toHaveNoViolations();
   });
 });

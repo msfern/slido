@@ -6,6 +6,7 @@
   font-weight: bold;
   color: var(--tile-text-color);
   cursor: pointer;
+  user-select: none;
   background-color: var(--tile-base-color);
   border: none;
   border-radius: 0.375rem;

@@ -24,8 +24,7 @@ AI use in this project was used as pair programming and its results approved onl
 **Cursor** was the IDE, so auto-complete code was used.
 Architectural and general questions were done with **Gemini**.
 **Claude Sonnet 4.6** was used for planning, README.md generation, JSDocs and unit tests.
-**Claude Opus 4.6** was used to check the project and identify wrong design patterns, issues, uncaught bugs and points of improvement.
-**Cursor (Agent mode) + Claude** was used for the senior-level code review and subsequent refactor (useReducer, accessibility, component tests, etc.).
+**Claude Opus 4.6** was used to check the project and identify wrong design patterns, issues, uncaught bugs, points of improvement and senior-level code review and subsequent refactor (useReducer, accessibility, component tests, etc.).
 
 ---
 
@@ -47,10 +46,6 @@ Two options: (1) The Math way — check inversion count and flip if the parity i
 
 At some point I noticed all tiles were re-rendering on every click, even with `memo` and `useCallback`. Turned out the problem was `handleMove`: it had `tiles` in its dependency array. Every move updated `tiles`, so `handleMove` got a new identity every time — and `memo` on the tiles was useless. Moving the adjacency logic fully inside functional updates helped, but the real fix was switching to `useReducer`. `dispatch` never changes, so `handleMove` stays stable and only the two tiles that actually swap get re-rendered.
 
-### Animation?
-
-No make it look prettier I added a Framer Motion animation for the tiles. It was SMOOTH. But I realized I was adding a whole library just to make a transition look good, and that was bundle weight I could avoid.
-
 ### Post–code review: what AI helped fix
 
 I ran a senior-level code review on this project (with AI assistance) and got a pretty brutal but fair verdict: "Not ready to submit." The logic was solid, but a bunch of things would have tanked a take-home assessment.
@@ -60,10 +55,6 @@ So I used AI (Cursor + Claude) to work through the fix list: refactored to `useR
 ---
 
 ## Solutions
-
-Phase 1: Data Architecture (The "Model")
-Phase 2: Headless Logic (The "Hook")
-Phase 3: The "Skeleton" UI (The "View")
 
 **Flat array as board state.** The board is represented as a single `Tile[]` rather than a 2D matrix. A flat array maps directly to a CSS Grid layout, simplifies React key management, and avoids nested loops in most operations.
 

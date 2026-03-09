@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
+import { axe } from "vitest-axe";
 import Header from "./Header";
 
 describe("Header", () => {
@@ -13,5 +14,10 @@ describe("Header", () => {
     render(<Header />);
 
     expect(document.querySelector("header")).not.toBeNull();
+  });
+
+  it("should have no axe violations", async () => {
+    const { baseElement } = render(<Header />);
+    expect(await axe(baseElement)).toHaveNoViolations();
   });
 });

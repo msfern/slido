@@ -1,5 +1,6 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { axe } from "vitest-axe";
 import { SOLVED_BOARD } from "@/mocks/testMocks";
 import Board from "./Board";
 
@@ -93,5 +94,17 @@ describe("Board", () => {
 
     const board = document.querySelector(".board");
     expect(board?.className).toContain("has-won");
+  });
+
+  it("should have no axe violations", async () => {
+    const { baseElement } = render(
+      <Board
+        gridSize={3}
+        handleMove={vi.fn()}
+        isSolved={false}
+        tiles={SOLVED_BOARD}
+      />
+    );
+    expect(await axe(baseElement)).toHaveNoViolations();
   });
 });

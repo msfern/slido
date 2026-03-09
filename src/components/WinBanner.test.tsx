@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
+import { axe } from "vitest-axe";
 import WinBanner from "./WinBanner";
 
 const SOLVED_ONE = /solved in 1 move!/i;
@@ -23,5 +24,10 @@ describe("WinBanner", () => {
 
     const output = document.querySelector("output[aria-live='assertive']");
     expect(output).not.toBeNull();
+  });
+
+  it("should have no axe violations", async () => {
+    const { baseElement } = render(<WinBanner moves={5} />);
+    expect(await axe(baseElement)).toHaveNoViolations();
   });
 });

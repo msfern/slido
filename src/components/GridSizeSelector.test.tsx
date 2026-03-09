@@ -1,5 +1,6 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { axe } from "vitest-axe";
 import GridSizeSelector from "./GridSizeSelector";
 
 const LEGEND_GRID_SIZE = /select a grid size/i;
@@ -36,5 +37,14 @@ describe("GridSizeSelector", () => {
     );
 
     expect(container.querySelector("fieldset")).not.toBeNull();
+  });
+
+  it("should have no axe violations", async () => {
+    const { baseElement } = render(
+      <main>
+        <GridSizeSelector onGridSizeChange={vi.fn()} />
+      </main>
+    );
+    expect(await axe(baseElement)).toHaveNoViolations();
   });
 });

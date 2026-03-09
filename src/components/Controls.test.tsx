@@ -1,5 +1,6 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { axe } from "vitest-axe";
 import Controls from "./Controls";
 
 const NEW_GAME_BUTTON = /new game/i;
@@ -41,5 +42,14 @@ describe("Controls", () => {
 
     const output = container.querySelector("output[aria-live='polite']");
     expect(output).not.toBeNull();
+  });
+
+  it("should have no axe violations", async () => {
+    const { baseElement } = render(
+      <main>
+        <Controls moves={0} onGridSizeChange={vi.fn()} resetGame={vi.fn()} />
+      </main>
+    );
+    expect(await axe(baseElement)).toHaveNoViolations();
   });
 });

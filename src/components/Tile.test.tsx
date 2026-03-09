@@ -1,5 +1,6 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { axe } from "vitest-axe";
 import Tile from "./Tile";
 
 const TILE_5_LABEL = /tile 5/i;
@@ -73,5 +74,12 @@ describe("Tile", () => {
     );
 
     expect(screen.getByLabelText("Tile 6, row 2, column 2")).toBeTruthy();
+  });
+
+  it("should have no axe violations", async () => {
+    const { baseElement } = render(
+      <Tile gridSize={3} handleMove={vi.fn()} index={0} tile={{ value: 5 }} />
+    );
+    expect(await axe(baseElement)).toHaveNoViolations();
   });
 });

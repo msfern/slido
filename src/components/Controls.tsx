@@ -1,7 +1,7 @@
 import { memo } from "react";
 import GridSizeSelector from "@/components/GridSizeSelector";
+import Button from "@/components/ui/Button";
 import type { GridSize } from "@/types";
-import Button from "./ui/Button";
 
 interface ControlsProps {
   moves: number;
@@ -11,7 +11,7 @@ interface ControlsProps {
 
 const Controls = ({ moves, onGridSizeChange, resetGame }: ControlsProps) => {
   return (
-    <div className="flex w-full items-center justify-between gap-6">
+    <section className="flex w-full items-center justify-between gap-6">
       <div className="flex flex-col items-center">
         <span className="font-bold text-slate-400 text-xs uppercase tracking-widest">
           Moves
@@ -19,6 +19,7 @@ const Controls = ({ moves, onGridSizeChange, resetGame }: ControlsProps) => {
         <output
           aria-live="polite"
           className="block font-black text-3xl text-slate-800 tabular-nums"
+          id="moves"
         >
           {moves}
         </output>
@@ -27,7 +28,7 @@ const Controls = ({ moves, onGridSizeChange, resetGame }: ControlsProps) => {
       <GridSizeSelector onGridSizeChange={onGridSizeChange} />
 
       <Button onClick={resetGame}>New Game</Button>
-    </div>
+    </section>
   );
 };
 
