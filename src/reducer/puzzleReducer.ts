@@ -40,6 +40,6 @@ export const puzzleReducer = (
     case "CHANGE_GRID_SIZE":
       return createInitialGameState(action.gridSize);
     default:
-      return state;
+      throw new Error(`Unhandled action type: ${(action as GameAction).type}`);
   }
 };

@@ -1,9 +1,10 @@
+import confetti from "canvas-confetti";
+import { useEffect } from "react";
 import Board from "@/components/Board";
 import Controls from "@/components/Controls";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import WinBanner from "@/components/WinBanner";
-import { useConfetti } from "@/hooks/useConfetti";
 import { usePuzzle } from "@/hooks/usePuzzle";
 import { DEFAULT_GRID_SIZE } from "@/utils/puzzleUtils";
 
@@ -18,7 +19,17 @@ const App = () => {
     tiles,
   } = usePuzzle({ gridSize: DEFAULT_GRID_SIZE });
 
-  useConfetti(isSolved);
+  useEffect(() => {
+    if (isSolved) {
+      confetti({
+        particleCount: 100,
+        spread: 360,
+        startVelocity: 30,
+        ticks: 60,
+        zIndex: 0,
+      });
+    }
+  }, [isSolved]);
 
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-md flex-col items-center justify-center gap-6 p-4">

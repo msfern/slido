@@ -204,7 +204,5 @@ pnpm coverage     # Vitest coverage report
 
 ## Future improvements
 
-- **Keyboard controls:** Arrow-key navigation for moving tiles
-- **Timer:** Track and display elapsed time per game
 - **Best score persistence:** Save best scores to `localStorage` per grid size
 - **Dark mode:** Wire up the existing CSS custom property dark theme
