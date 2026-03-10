@@ -1,21 +1,18 @@
-import { useState } from "react";
 import type { GridSize } from "@/types";
-import { DEFAULT_GRID_SIZE, GRID_SIZE_OPTIONS } from "@/utils/puzzleUtils";
+import { GRID_SIZE_OPTIONS } from "@/utils/puzzleUtils";
 
 const GridSizeRadio = ({
+  gridSize,
   onGridSizeChange,
 }: {
+  gridSize: GridSize;
   onGridSizeChange: (size: GridSize) => void;
 }) => {
-  const [selectedSize, setSelectedSize] = useState<GridSize>(DEFAULT_GRID_SIZE);
-
-  const handleSizeChange = (size: GridSize) => {
-    setSelectedSize(size);
-    onGridSizeChange(size);
-  };
-
   return (
-    <fieldset className="flex flex-col items-start gap-1">
+    <fieldset
+      aria-label="Grid size selector"
+      className="flex flex-col items-start gap-1"
+    >
       <legend className="font-bold text-slate-400 text-xs uppercase tracking-widest">
         Select a grid size:
       </legend>
@@ -23,10 +20,10 @@ const GridSizeRadio = ({
         {GRID_SIZE_OPTIONS.map((size) => (
           <div key={size}>
             <input
-              checked={selectedSize === size}
+              checked={gridSize === size}
               id={`grid-${size}`}
               name="grid-size"
-              onChange={() => handleSizeChange(size)}
+              onChange={() => onGridSizeChange(size)}
               type="radio"
             />
             <label htmlFor={`grid-${size}`}>

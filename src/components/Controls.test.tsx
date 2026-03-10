@@ -10,7 +10,12 @@ describe("Controls", () => {
 
   it("renders the move count", () => {
     render(
-      <Controls moves={42} onGridSizeChange={vi.fn()} resetGame={vi.fn()} />
+      <Controls
+        gridSize={3}
+        moves={42}
+        onGridSizeChange={vi.fn()}
+        resetGame={vi.fn()}
+      />
     );
 
     expect(screen.getByText("42")).toBeTruthy();
@@ -18,7 +23,12 @@ describe("Controls", () => {
 
   it("renders the New Game button", () => {
     render(
-      <Controls moves={0} onGridSizeChange={vi.fn()} resetGame={vi.fn()} />
+      <Controls
+        gridSize={3}
+        moves={0}
+        onGridSizeChange={vi.fn()}
+        resetGame={vi.fn()}
+      />
     );
 
     expect(screen.getByRole("button", { name: NEW_GAME_BUTTON })).toBeTruthy();
@@ -27,7 +37,12 @@ describe("Controls", () => {
   it("calls resetGame when New Game is clicked", () => {
     const resetGame = vi.fn();
     render(
-      <Controls moves={5} onGridSizeChange={vi.fn()} resetGame={resetGame} />
+      <Controls
+        gridSize={3}
+        moves={5}
+        onGridSizeChange={vi.fn()}
+        resetGame={resetGame}
+      />
     );
 
     fireEvent.click(screen.getByRole("button", { name: NEW_GAME_BUTTON }));
@@ -37,7 +52,12 @@ describe("Controls", () => {
 
   it("renders the move counter with aria-live", () => {
     const { container } = render(
-      <Controls moves={0} onGridSizeChange={vi.fn()} resetGame={vi.fn()} />
+      <Controls
+        gridSize={3}
+        moves={0}
+        onGridSizeChange={vi.fn()}
+        resetGame={vi.fn()}
+      />
     );
 
     const output = container.querySelector("output[aria-live='polite']");
@@ -46,9 +66,12 @@ describe("Controls", () => {
 
   it("should have no axe violations", async () => {
     const { baseElement } = render(
-      <main>
-        <Controls moves={0} onGridSizeChange={vi.fn()} resetGame={vi.fn()} />
-      </main>
+      <Controls
+        gridSize={3}
+        moves={0}
+        onGridSizeChange={vi.fn()}
+        resetGame={vi.fn()}
+      />
     );
     expect(await axe(baseElement)).toHaveNoViolations();
   });

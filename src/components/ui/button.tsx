@@ -7,7 +7,7 @@ const Button = ({
 }) => {
   return (
     <button
-      className="cursor-pointer rounded-md bg-slate-800 px-4 py-2 text-white hover:bg-slate-700"
+      className="cursor-pointer rounded-md bg-primary px-4 py-2 text-primary-foreground transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       onClick={onClick}
       type="button"
     >

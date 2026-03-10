@@ -83,12 +83,14 @@ export const shuffleBoard = (board: Tile[], gridSize: GridSize): Tile[] => {
  * @param gridSize - The size of the grid.
  * @returns The initial game state.
  */
-export const createInitialGameState = (gridSize: GridSize): GameState => ({
-  gridSize,
-  moves: 0,
-  status: "idle",
-  tiles: shuffleBoard(createBoard(gridSize), gridSize),
-});
+export const createInitialGameState = (gridSize: GridSize): GameState => {
+  return {
+    gridSize,
+    moves: 0,
+    status: "idle",
+    tiles: shuffleBoard(createBoard(gridSize), gridSize),
+  };
+};
 
 /**
  * Returns the index of the empty tile in the board array.

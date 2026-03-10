@@ -17,16 +17,16 @@ const ErrorFallback = ({
 }: {
   resetErrorBoundary: () => void;
 }) => (
-  <div className="flex min-h-screen items-center justify-center p-4">
+  <div className="flex min-h-screen items-center justify-center bg-background p-4">
     <div className="text-center">
-      <h1 className="mb-2 font-bold text-2xl text-slate-800">
+      <h1 className="mb-2 font-bold text-2xl text-foreground">
         Something went wrong
       </h1>
-      <p className="mb-4 text-slate-600">
+      <p className="mb-4 text-muted-foreground">
         Please refresh the page to try again.
       </p>
       <button
-        className="rounded-lg bg-slate-800 px-4 py-2 font-medium text-white transition-colors hover:bg-slate-900"
+        className="rounded-lg bg-primary px-4 py-2 font-medium text-primary-foreground transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         onClick={resetErrorBoundary}
         type="button"
       >

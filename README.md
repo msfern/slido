@@ -10,10 +10,11 @@ A classic sliding tile puzzle built with React 19 and TypeScript. Numbered tiles
 | TypeScript | 5.9 | Type safety |
 | Vite | 7 | Dev server & bundler |
 | Tailwind CSS | 4 | Utility-first styling |
-| Framer Motion | 12 | Tile slide animations |
-| shadcn/ui + Base UI | 4 / 1 | Accessible UI primitives |
+| Motion | 12 | Tile slide animations |
+| canvas-confetti | 1.9 | Win celebration |
+| class-variance-authority, clsx, tailwind-merge | — | Button & styling utilities |
 | Biome + Ultracite | 2.4.5 / 7.2.5 | Linting & formatting |
-| Vitest + RTL | 4 / 16 | Unit & component testing |
+| Vitest + RTL + vitest-axe | 4 / 16 | Unit, component & a11y testing |
 
 ---
 
@@ -60,7 +61,7 @@ So I used AI (Cursor + Claude) to work through the fix list: refactored to `useR
 
 **Pure utility functions.** All game logic lives in `src/utils/puzzleUtils.ts` as plain functions with no side effects. They take state in, return new state out. This makes them straightforward to unit test in isolation.
 
-**Reducer-based state management.** `usePuzzle` uses `useReducer` with a pure `gameReducer` that handles `MOVE`, `RESET`, and `CHANGE_GRID_SIZE` actions. The reducer is exported and tested directly as a pure function. `dispatch` has a stable identity, which means `memo(Tile)` actually works — only the two tiles involved in a swap re-render.
+**Reducer-based state management.** `usePuzzle` uses `useReducer` with [`puzzleReducer`](src/reducer/puzzleReducer.ts) that handles `MOVE`, `RESET`, and `CHANGE_GRID_SIZE` actions. The reducer is exported and tested directly as a pure function. `dispatch` has a stable identity, which means `memo(Tile)` actually works — only the two tiles involved in a swap re-render.
 
 **Single hook, dumb components.** `usePuzzle` owns all mutable state. Components receive data and callbacks as props and render nothing beyond what they are given. No Context API, no global store. The app is small enough that this is the right trade-off.
 
@@ -70,13 +71,18 @@ So I used AI (Cursor + Claude) to work through the fix list: refactored to `useR
 
 ```mermaid
 flowchart TD
+    App --> Header
     App --> Controls
     App --> Board
+    App --> WinBanner
     App --> Footer
+    App -->|useConfetti| Confetti
     Board --> Tile
-    App -->|"usePuzzle()"| Hook["usePuzzle hook"]
-    Hook -->|"useReducer"| Reducer["gameReducer"]
-    Reducer --> puzzleUtils["puzzleUtils.ts (pure functions)"]
+    Controls --> GridSizeSelector
+    Controls --> Button
+    App -->|usePuzzle| Hook
+    Hook -->|useReducer| puzzleReducer
+    puzzleReducer --> puzzleUtils
 ```
 
 `App` calls `usePuzzle` and fans the resulting state and callbacks down one level to `Board` and `Controls`. No prop drilling beyond that depth.
@@ -85,10 +91,14 @@ flowchart TD
 
 | Component | Responsibility |
 | --- | --- |
-| `App` | Composes layout; connects hook to children; renders win message |
+| `App` | Composes layout; connects hooks to children; renders `WinBanner` when solved |
+| `Header` | Renders app title ("slido") |
 | `Board` | Renders the tile grid as a CSS Grid `<section>` |
-| `Tile` | Single interactive tile; memoised, animated with Framer Motion `layout` |
-| `Controls` | Move counter, grid-size radio selector, New Game button |
+| `Tile` | Single interactive tile; memoised, animated with Motion `layout` |
+| `Controls` | Move counter; delegates grid-size to `GridSizeSelector`, New Game to `Button` |
+| `GridSizeSelector` | Radio group for 3×3 / 4×4 / 5×5 grid size selection |
+| `Button` (ui) | Reusable primary button; used for "New Game" |
+| `WinBanner` | Displays "Solved in N moves!" with `aria-live` when puzzle is won |
 | `Footer` | Static attribution line |
 | `react-error-boundary` | Catches runtime errors and renders fallback UI (no class components in app) |
 
@@ -97,6 +107,10 @@ flowchart TD
 ## Core logic
 
 All functions live in [`src/utils/puzzleUtils.ts`](src/utils/puzzleUtils.ts).
+
+### `createInitialGameState(gridSize)`
+
+Returns the full initial `GameState`: shuffled board (via `createBoard` + `shuffleBoard`), `moves: 0`, `status: "idle"`, and `gridSize`.
 
 ### `createBoard(gridSize)`
 
@@ -131,7 +145,7 @@ Checks whether tiles are ordered 1…n-1 with the empty tile last. Short-circuit
 
 ## State management
 
-[`src/hooks/usePuzzle.ts`](src/hooks/usePuzzle.ts) is the single source of truth, built on `useReducer`.
+[`src/hooks/usePuzzle.ts`](src/hooks/usePuzzle.ts) is the single source of truth, built on `useReducer`. It imports [`puzzleReducer`](src/reducer/puzzleReducer.ts) to handle all state transitions.
 
 ### `GameState`
 
@@ -154,6 +168,13 @@ Checks whether tiles are ordered 1…n-1 with the empty tile last. Short-circuit
 
 The original implementation used three coupled `useState` calls with a `useCallback` that depended on `tiles`. This caused `handleMove` to get a new identity on every move, defeating `memo` on all tiles. With `useReducer`, `dispatch` is inherently stable and all state transitions are co-located in a pure, testable reducer.
 
+### Hooks
+
+| Hook | Responsibility |
+| --- | --- |
+| `usePuzzle` | Owns game state; returns `tiles`, `moves`, `handleMove`, `resetGame`, `changeGridSize`, etc. |
+| `useConfetti` | On `isSolved`, dynamically imports `canvas-confetti` and triggers celebration. Respects `prefers-reduced-motion`. |
+
 ---
 
 ## Accessibility
@@ -161,7 +182,7 @@ The original implementation used three coupled `useState` calls with a `useCallb
 - **Tile labels:** Each numbered tile has an `aria-label` like "Tile 5, row 2, column 2"
 - **Empty tile:** Rendered as a `<div aria-hidden="true">` (non-focusable, invisible to screen readers)
 - **Move counter:** Uses `<output aria-live="polite">` to announce changes
-- **Win announcement:** Uses `<output aria-live="assertive">` to announce the victory
+- **Win announcement:** Uses `<output aria-live="polite" aria-atomic="true">` in `WinBanner` to announce the victory
 - **Board:** `<section>` element with descriptive `aria-label`
 
 ---
@@ -187,6 +208,8 @@ pnpm build        # type-check + production build
 pnpm preview      # preview production build
 pnpm lint         # Biome check
 pnpm lint:fix     # Biome check with auto-fix
+pnpm check        # Ultracite check
+pnpm fix          # Ultracite fix
 pnpm test         # Vitest watch mode
 pnpm coverage     # Vitest coverage report
 ```

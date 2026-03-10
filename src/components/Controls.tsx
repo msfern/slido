@@ -4,14 +4,23 @@ import Button from "@/components/ui/Button";
 import type { GridSize } from "@/types";
 
 interface ControlsProps {
+  gridSize: GridSize;
   moves: number;
   onGridSizeChange: (gridSize: GridSize) => void;
   resetGame: () => void;
 }
 
-const Controls = ({ moves, onGridSizeChange, resetGame }: ControlsProps) => {
+const Controls = ({
+  gridSize,
+  moves,
+  onGridSizeChange,
+  resetGame,
+}: ControlsProps) => {
   return (
-    <section className="flex w-full items-center justify-between gap-6">
+    <section
+      aria-label="Game controls"
+      className="flex w-full items-center justify-between gap-6"
+    >
       <div className="flex flex-col items-center">
         <span className="font-bold text-slate-400 text-xs uppercase tracking-widest">
           Moves
@@ -25,7 +34,10 @@ const Controls = ({ moves, onGridSizeChange, resetGame }: ControlsProps) => {
         </output>
       </div>
 
-      <GridSizeSelector onGridSizeChange={onGridSizeChange} />
+      <GridSizeSelector
+        gridSize={gridSize}
+        onGridSizeChange={onGridSizeChange}
+      />
 
       <Button onClick={resetGame}>New Game</Button>
     </section>

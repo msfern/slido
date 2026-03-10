@@ -19,10 +19,10 @@ describe("WinBanner", () => {
     expect(screen.getByText(SOLVED_MANY)).toBeTruthy();
   });
 
-  it("uses an output element with aria-live assertive", () => {
+  it("uses an output element with aria-live polite", () => {
     render(<WinBanner moves={5} />);
 
-    const output = document.querySelector("output[aria-live='assertive']");
+    const output = document.querySelector("output[aria-live='polite']");
     expect(output).not.toBeNull();
   });
 
