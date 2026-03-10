@@ -21,7 +21,7 @@ const Tile = ({ gridSize, index, handleMove, tile }: TileProps) => {
   return (
     <motion.button
       aria-label={`Tile ${tile.value}, row ${row}, column ${col}`}
-      className="tile"
+      className="tile focus-visible:ring-4 focus-visible:ring-indigo-800"
       layout
       onClick={() => handleMove(index)}
       transition={{ type: "spring", stiffness: 700, damping: 35 }}

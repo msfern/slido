@@ -218,6 +218,7 @@ pnpm coverage     # Vitest coverage report
 
 ## Future improvements
 
+- **Arrow navigation:** Navigate the board using the keyboard arrows
 - **Best score persistence:** Save best scores to `localStorage` per grid size
 - **Custom tiles:** Allow the user to upload their own image to be displayed instead of numbers
 - **Dark mode:** Wire up the existing CSS custom property dark theme

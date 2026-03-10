@@ -1,5 +1,5 @@
-import type { GridSize } from "@/types";
-import { GRID_SIZE_OPTIONS } from "@/utils/puzzleUtils";
+import type { GridSize } from "@/features/puzzle/types";
+import { GRID_SIZE_OPTIONS } from "@/features/puzzle/utils/puzzleUtils";
 
 const GridSizeRadio = ({
   gridSize,

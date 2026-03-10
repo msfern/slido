@@ -1,4 +1,4 @@
-import type { GameState, Tile } from "@/types";
+import type { GameState, Tile } from "@/features/puzzle/types";
 
 export const SOLVED_BOARD: Tile[] = [
   { value: 1 },

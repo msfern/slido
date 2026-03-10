@@ -1,11 +1,11 @@
-import Board from "@/components/Board";
-import Controls from "@/components/Controls";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import WinBanner from "@/components/WinBanner";
+import Board from "@/features/puzzle/components/Board";
+import Controls from "@/features/puzzle/components/Controls";
+import { usePuzzle } from "@/features/puzzle/hooks/usePuzzle";
+import { DEFAULT_GRID_SIZE } from "@/features/puzzle/utils/puzzleUtils";
 import useConfetti from "@/hooks/useConfetti";
-import { usePuzzle } from "@/hooks/usePuzzle";
-import { DEFAULT_GRID_SIZE } from "@/utils/puzzleUtils";
 
 const App = () => {
   const {

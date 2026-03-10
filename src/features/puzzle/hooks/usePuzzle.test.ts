@@ -1,12 +1,15 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import type { GridSize } from "@/features/puzzle/types";
+import { createInitialGameState } from "@/features/puzzle/utils/puzzleUtils";
 import { NEAR_SOLVED_STATE, SOLVED_BOARD } from "@/mocks/testMocks";
-import type { GridSize } from "@/types";
-import { createInitialGameState } from "@/utils/puzzleUtils";
 import { usePuzzle } from "./usePuzzle";
 
-vi.mock("@/utils/puzzleUtils", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@/utils/puzzleUtils")>();
+vi.mock("@/features/puzzle/utils/puzzleUtils", async (importOriginal) => {
+  const actual =
+    await importOriginal<
+      typeof import("@/features/puzzle/utils/puzzleUtils")
+    >();
   return {
     ...actual,
     createBoard: vi.fn(actual.createBoard),

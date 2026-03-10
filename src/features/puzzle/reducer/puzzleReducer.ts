@@ -1,11 +1,11 @@
-import type { GameAction, GameState } from "@/types";
+import type { GameAction, GameState } from "@/features/puzzle/types";
 import {
   canMoveTile,
   checkWin,
   createInitialGameState,
   getEmptyTileIndex,
   moveTile,
-} from "@/utils/puzzleUtils";
+} from "@/features/puzzle/utils/puzzleUtils";
 
 export const puzzleReducer = (
   state: GameState,

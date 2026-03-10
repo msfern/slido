@@ -1,7 +1,7 @@
 import { useCallback, useReducer } from "react";
-import { puzzleReducer } from "@/reducer/puzzleReducer";
+import { puzzleReducer } from "@/features/puzzle/reducer/puzzleReducer";
+import { createInitialGameState } from "@/features/puzzle/utils/puzzleUtils";
 import type { GridSize } from "../types";
-import { createInitialGameState } from "../utils/puzzleUtils";
 
 export const usePuzzle = ({ gridSize }: { gridSize: GridSize }) => {
   const [state, dispatch] = useReducer(

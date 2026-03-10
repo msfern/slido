@@ -1,7 +1,7 @@
 import { memo } from "react";
-import GridSizeSelector from "@/components/GridSizeSelector";
 import Button from "@/components/ui/Button";
-import type { GridSize } from "@/types";
+import GridSizeSelector from "@/features/puzzle/components/GridSizeSelector";
+import type { GridSize } from "@/features/puzzle/types";
 
 interface ControlsProps {
   gridSize: GridSize;

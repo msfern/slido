@@ -1,4 +1,4 @@
-import type { GameState, GridSize, Tile } from "../types";
+import type { GameState, GridSize, Tile } from "@/features/puzzle/types";
 
 // CONSTANTS
 export const DEFAULT_GRID_SIZE: GridSize = 3; // Default grid size

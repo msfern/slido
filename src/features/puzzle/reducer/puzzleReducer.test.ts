@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
+import type { GameState } from "@/features/puzzle/types";
 import { NEAR_SOLVED_STATE } from "@/mocks/testMocks";
-import type { GameState } from "@/types";
 import { puzzleReducer } from "./puzzleReducer";
 
 describe("puzzleReducer", () => {
