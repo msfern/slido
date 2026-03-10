@@ -218,3 +218,4 @@ pnpm coverage     # Vitest coverage report
 - **Best score persistence:** Save best scores to `localStorage` per grid size
 - **Custom tiles:** Allow the user to upload their own image to be displayed instead of numbers
 - **Dark mode:** Wire up the existing CSS custom property dark theme
+- **Integration tests:** Include tests using Playwright
