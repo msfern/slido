@@ -1,4 +1,7 @@
 # slido
+<p align="center" width="100%">
+    <img width="400" alt="Slido demo" src="https://github.com/user-attachments/assets/d3e7badf-39f8-4279-b5fc-aed77e061b78" />
+</p>
 
 A classic sliding tile puzzle built with React 19 and TypeScript. Numbered tiles fill a custom grid; click any tile adjacent to the empty slot to slide it into place. The goal is to restore the sequence with the empty slot last.
 
