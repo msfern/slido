@@ -1,4 +1,5 @@
 # slido
+
 <p align="center" width="100%">
     <img width="400" alt="Slido demo" src="https://github.com/user-attachments/assets/acae0bae-88ea-4524-b86a-7869f0df8907" />
 </p>
@@ -61,7 +62,7 @@ So I used AI (Cursor + Claude) to work through the fix list: refactored to `useR
 
 **Flat array as board state.** The board is represented as a single `Tile[]` rather than a 2D matrix. A flat array maps directly to a CSS Grid layout, simplifies React key management, and avoids nested loops in most operations.
 
-**Pure utility functions.** All game logic lives in `src/utils/puzzleUtils.ts` as plain functions with no side effects. They take state in, return new state out. This makes them straightforward to unit test in isolation.
+**Pure utility functions.** All game logic lives in [`src/features/puzzle/utils/puzzleUtils.ts`](src/features/puzzle/utils/puzzleUtils.ts) as plain functions with no side effects. They take state in, return new state out. This makes them straightforward to unit test in isolation.
 
 **Reducer-based state management.** `usePuzzle` uses `useReducer` with [`puzzleReducer`](src/reducer/puzzleReducer.ts) that handles `MOVE`, `RESET`, and `CHANGE_GRID_SIZE` actions. The reducer is exported and tested directly as a pure function. `dispatch` has a stable identity, which means `memo(Tile)` actually works — only the two tiles involved in a swap re-render.
 
@@ -108,7 +109,7 @@ flowchart TD
 
 ## Core logic
 
-All functions live in [`src/utils/puzzleUtils.ts`](src/utils/puzzleUtils.ts).
+All functions live in [`src/features/puzzle/utils/puzzleUtils.ts`](src/features/puzzle/utils/puzzleUtils.ts).
 
 ### `createInitialGameState(gridSize)`
 
@@ -147,7 +148,7 @@ Checks whether tiles are ordered 1…n-1 with the empty tile last. Short-circuit
 
 ## State management
 
-[`src/hooks/usePuzzle.ts`](src/hooks/usePuzzle.ts) is the single source of truth, built on `useReducer`. It imports [`puzzleReducer`](src/reducer/puzzleReducer.ts) to handle all state transitions.
+[`src/features/puzzle/hooks/usePuzzle.ts`](src/features/puzzle/hooks/usePuzzle.ts) is the single source of truth, built on `useReducer`. It imports [`puzzleReducer`](src/features/puzzle/reducer/puzzleReducer.ts) to handle all state transitions.
 
 ### `GameState`
 
@@ -191,13 +192,23 @@ The original implementation used three coupled `useState` calls with a `useCallb
 
 ## Types
 
-Defined in [`src/types/index.ts`](src/types/index.ts).
+Defined in [`src/features/puzzle/types/index.ts`](src/features/puzzle/types/index.ts).
 
 ```ts
 type TileValue = number | null;
 interface Tile { value: TileValue; }
 type GridSize = 3 | 4 | 5;
 type GameStatus = "idle" | "playing" | "won";
+interface GameState {
+  gridSize: GridSize;
+  moves: number;
+  status: GameStatus;
+  tiles: Tile[];
+}
+type GameAction =
+  | { type: "MOVE"; clickedIndex: number }
+  | { type: "RESET" }
+  | { type: "CHANGE_GRID_SIZE"; gridSize: GridSize };
 ```
 
 ---
