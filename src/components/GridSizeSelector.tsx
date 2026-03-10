@@ -9,10 +9,7 @@ const GridSizeRadio = ({
   onGridSizeChange: (size: GridSize) => void;
 }) => {
   return (
-    <fieldset
-      aria-label="Grid size selector"
-      className="flex flex-col items-start gap-1"
-    >
+    <div className="flex flex-col justify-between gap-1" role="radiogroup">
       <legend className="font-bold text-slate-400 text-xs uppercase tracking-widest">
         Select a grid size:
       </legend>
@@ -32,7 +29,7 @@ const GridSizeRadio = ({
           </div>
         ))}
       </div>
-    </fieldset>
+    </div>
   );
 };
 

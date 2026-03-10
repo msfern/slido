@@ -12,7 +12,6 @@ A classic sliding tile puzzle built with React 19 and TypeScript. Numbered tiles
 | Tailwind CSS | 4 | Utility-first styling |
 | Motion | 12 | Tile slide animations |
 | canvas-confetti | 1.9 | Win celebration |
-| class-variance-authority, clsx, tailwind-merge | — | Button & styling utilities |
 | Biome + Ultracite | 2.4.5 / 7.2.5 | Linting & formatting |
 | Vitest + RTL + vitest-axe | 4 / 16 | Unit, component & a11y testing |
 
@@ -206,8 +205,6 @@ type GameStatus = "idle" | "playing" | "won";
 pnpm dev          # start dev server
 pnpm build        # type-check + production build
 pnpm preview      # preview production build
-pnpm lint         # Biome check
-pnpm lint:fix     # Biome check with auto-fix
 pnpm check        # Ultracite check
 pnpm fix          # Ultracite fix
 pnpm test         # Vitest watch mode
@@ -219,4 +216,5 @@ pnpm coverage     # Vitest coverage report
 ## Future improvements
 
 - **Best score persistence:** Save best scores to `localStorage` per grid size
+- **Custom tiles:** Allow the user to upload their own image to be displayed instead of numbers
 - **Dark mode:** Wire up the existing CSS custom property dark theme

@@ -23,7 +23,7 @@ const App = () => {
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-md flex-col items-center justify-center gap-6 p-4">
       <Header />
-      <main>
+      <main className="flex flex-col gap-6">
         <Controls
           gridSize={gridSize}
           moves={moves}

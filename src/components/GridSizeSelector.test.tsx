@@ -33,10 +33,10 @@ describe("GridSizeSelector", () => {
     expect(screen.getByText(LEGEND_GRID_SIZE)).toBeTruthy();
   });
 
-  it("renders a fieldset with aria-label", () => {
+  it("renders a container with role='radiogroup'", () => {
     render(<GridSizeSelector gridSize={3} onGridSizeChange={vi.fn()} />);
 
-    expect(screen.getByLabelText("Grid size selector")).toBeTruthy();
+    expect(screen.getByRole("radiogroup")).toBeTruthy();
   });
 
   it("should have no axe violations", async () => {

@@ -1,4 +1,3 @@
-/** biome-ignore-all lint/suspicious/noFocusedTests: <explanation> */
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { NEAR_SOLVED_STATE, SOLVED_BOARD } from "@/mocks/testMocks";
