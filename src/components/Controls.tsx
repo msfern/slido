@@ -19,7 +19,7 @@ const Controls = ({
   return (
     <section
       aria-label="Game controls"
-      className="flex w-full justify-between gap-6"
+      className="flex w-full flex-col items-center justify-between gap-3 sm:flex-row sm:items-start sm:gap-6"
     >
       <div className="flex flex-col items-center">
         <span className="font-bold text-slate-400 text-xs uppercase tracking-widest">
